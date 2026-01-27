@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration Cérémonie AE2I</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Particules d'arrière-plan -->
+<div class="particles">
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<div class="container">
+  <!-- Logo animé -->
+  <div class="logo-wrapper">
+    <img src="logo.png" class="logo" alt="AE2I Logo">
+  </div>
+
+  <!-- Titre principal -->
+  <h1 class="main-title">
+    <span class="title-icon">🎓</span>
+    Cérémonie Officielle de Parrainage
+    <span class="title-icon">✨</span>
+  </h1>
+  <p class="subtitle">
+    Association des Élèves Ingénieurs en Informatique
+  </p>
+
+  <!-- Zone de chargement -->
+  <div class="upload-zone">
+    <!-- Carte Filleuls -->
+    <div class="upload-card blue-card" id="filleulsCard">
+      <div class="card-header">
+        <div class="card-icon">📘</div>
+        <h2>Filleuls</h2>
+      </div>
+      
+      <div class="drop-zone" id="filleulsDropZone">
+        <div class="drop-icon">📤</div>
+        <p class="drop-text">Glissez les photos ici</p>
+        <p class="drop-hint">ou cliquez pour sélectionner</p>
+        <input type="file" id="filleulsInput" accept="image/*" multiple hidden>
+      </div>
+      
+      <div class="file-counter" id="filleulsCounter">
+        <span class="counter-number">0</span> photo(s) chargée(s)
+      </div>
+      
+      <div class="preview-grid" id="filleulsPreview"></div>
+    </div>
+
+    <!-- Carte Parrains -->
+    <div class="upload-card green-card" id="parrainsCard">
+      <div class="card-header">
+        <div class="card-icon">📗</div>
+        <h2>Parrains</h2>
+      </div>
+      
+      <div class="drop-zone" id="parrainsDropZone">
+        <div class="drop-icon">📤</div>
+        <p class="drop-text">Glissez les photos ici</p>
+        <p class="drop-hint">ou cliquez pour sélectionner</p>
+        <input type="file" id="parrainsInput" accept="image/*" multiple hidden>
+      </div>
+      
+      <div class="file-counter" id="parrainsCounter">
+        <span class="counter-number">0</span> photo(s) chargée(s)
+      </div>
+      
+      <div class="preview-grid" id="parrainsPreview"></div>
+    </div>
+  </div>
+
+  <!-- Bouton de lancement -->
+  <button id="startBtn" class="start-button" disabled>
+    <span class="button-icon">🚀</span>
+    <span class="button-text">ACCÉDER À LA CÉRÉMONIE</span>
+    <div class="button-shine"></div>
+  </button>
+
+  <!-- Message d'instructions -->
+  <div class="instructions">
+    <p>💡 <strong>Instructions :</strong> Chargez les photos des filleuls et des parrains pour commencer</p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

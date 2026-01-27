@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cérémonie de Parrainage AE2I</title>
+  <link rel="stylesheet" href="ceremony.css">
+</head>
+<body>
+
+<!-- Particules animées en arrière-plan -->
+<div class="particles">
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<!-- Logo animé en haut -->
+<div class="logo-container">
+  <img src="logo.png" alt="AE2I Logo" class="main-logo">
+</div>
+
+<!-- Titre principal avec effet néon -->
+<h1 class="title">
+  <span class="title-icon">🎓</span>
+  <span class="title-text">Cérémonie de Parrainage</span>
+  <span class="title-icon">✨</span>
+</h1>
+<p class="subtitle">Association des Élèves Ingénieurs en Informatique</p>
+
+<!-- Scène principale -->
+<div class="arena">
+  <!-- Carte Filleul -->
+  <div class="card-wrapper">
+    <div class="card-glow"></div>
+    <div class="card" id="filleulCard">
+      <div class="card-inner">
+        <div class="card-badge">FILLEUL</div>
+        <div class="card-image">
+          <div class="placeholder-icon">👤</div>
+        </div>
+        <div class="card-info">
+          <div class="card-name">???</div>
+          <div class="card-promo">En attente...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Icône VS au centre -->
+  <div class="vs-container">
+    <div class="vs-circle">
+      <span class="vs-text">VS</span>
+    </div>
+    <div class="connection-line"></div>
+  </div>
+
+  <!-- Carte Parrain -->
+  <div class="card-wrapper">
+    <div class="card-glow"></div>
+    <div class="card" id="parrainCard">
+      <div class="card-inner">
+        <div class="card-badge parrain">PARRAIN</div>
+        <div class="card-image">
+          <div class="placeholder-icon">👤</div>
+        </div>
+        <div class="card-info">
+          <div class="card-name">???</div>
+          <div class="card-promo">En attente...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compte à rebours -->
+<div id="countdown" class="countdown">
+  <div class="countdown-number">5</div>
+</div>
+
+<!-- Bouton de lancement -->
+<button id="drawBtn" class="draw-button">
+  <span class="button-icon">🎲</span>
+  <span class="button-text">LANCER LE TIRAGE</span>
+  <div class="button-shine"></div>
+</button>
+
+<!-- Effets confettis -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Sons -->
+<audio id="suspenseSound" src="assets/sounds/suspense.mp3"></audio>
+<audio id="revealSound" src="assets/sounds/reveal.mp3"></audio>
+
+<script src="ceremony.js"></script>
+</body>
+</html>
