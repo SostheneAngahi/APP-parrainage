@@ -3,6 +3,35 @@
 // ============================================
 let filleulsFiles = [];
 let parrainsFiles = [];
+let db;
+
+// ============================================
+// INITIALISATION DE LA BASE DE DONNÉES
+// ============================================
+function initDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('CeremonyDB', 1);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      db = request.result;
+      resolve(db);
+    };
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains('photos')) {
+        db.createObjectStore('photos', { keyPath: 'type' });
+      }
+    };
+  });
+}
+
+// Initialiser la DB au chargement
+initDB().catch(err => {
+  console.error('Erreur d\'initialisation de la base de données:', err);
+  alert('⚠️ Erreur d\'initialisation. Veuillez recharger la page.');
+});
 
 // ============================================
 // ÉLÉMENTS DOM
@@ -165,33 +194,79 @@ startBtn.addEventListener('click', async () => {
     return;
   }
   
-  // Animation du bouton
-  startBtn.style.transform = 'scale(0.95)';
-  setTimeout(() => {
-    startBtn.style.transform = 'scale(1)';
-  }, 200);
+  // Désactiver le bouton pendant le traitement
+  startBtn.disabled = true;
+  const originalText = startBtn.querySelector('.button-text').textContent;
   
-  // Convertir les fichiers en données utilisables
-  const filleulsData = await Promise.all(
-    filleulsFiles.map(file => fileToData(file))
-  );
-  
-  const parrainsData = await Promise.all(
-    parrainsFiles.map(file => fileToData(file))
-  );
-  
-  // Sauvegarder dans le localStorage
-  localStorage.setItem('filleulsData', JSON.stringify(filleulsData));
-  localStorage.setItem('parrainsData', JSON.stringify(parrainsData));
-  
-  // Redirection avec animation
-  document.body.style.transition = 'opacity 0.5s ease';
-  document.body.style.opacity = '0';
-  
-  setTimeout(() => {
-    window.location.href = 'ceremony.html';
-  }, 500);
+  try {
+    // Afficher la progression
+    startBtn.querySelector('.button-text').textContent = 'PRÉPARATION...';
+    
+    // Convertir les fichiers en données utilisables
+    startBtn.querySelector('.button-text').textContent = `CHARGEMENT FILLEULS (0/${filleulsFiles.length})`;
+    const filleulsData = await convertFilesWithProgress(filleulsFiles, 'filleuls', startBtn);
+    
+    startBtn.querySelector('.button-text').textContent = `CHARGEMENT PARRAINS (0/${parrainsFiles.length})`;
+    const parrainsData = await convertFilesWithProgress(parrainsFiles, 'parrains', startBtn);
+    
+    // Sauvegarder dans IndexedDB
+    startBtn.querySelector('.button-text').textContent = 'SAUVEGARDE...';
+    await saveToIndexedDB('filleuls', filleulsData);
+    await saveToIndexedDB('parrains', parrainsData);
+    
+    console.log(`✅ ${filleulsData.length} filleuls et ${parrainsData.length} parrains chargés`);
+    
+    // Animation de transition
+    startBtn.querySelector('.button-text').textContent = 'DÉMARRAGE...';
+    document.body.style.transition = 'opacity 0.5s ease';
+    document.body.style.opacity = '0';
+    
+    setTimeout(() => {
+      window.location.href = 'ceremony.html';
+    }, 500);
+    
+  } catch (error) {
+    console.error('Erreur lors du chargement:', error);
+    alert('⚠️ Erreur lors du chargement des photos. Essayez avec moins de photos ou des images plus petites.');
+    startBtn.disabled = false;
+    startBtn.querySelector('.button-text').textContent = originalText;
+  }
 });
+
+// ============================================
+// CONVERSION AVEC PROGRESSION
+// ============================================
+async function convertFilesWithProgress(files, type, button) {
+  const results = [];
+  
+  for (let i = 0; i < files.length; i++) {
+    const data = await fileToData(files[i]);
+    results.push(data);
+    
+    // Mettre à jour la progression
+    if (button) {
+      button.querySelector('.button-text').textContent = 
+        `CHARGEMENT ${type.toUpperCase()} (${i + 1}/${files.length})`;
+    }
+  }
+  
+  return results;
+}
+
+// ============================================
+// SAUVEGARDE DANS INDEXEDDB
+// ============================================
+function saveToIndexedDB(type, data) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['photos'], 'readwrite');
+    const store = transaction.objectStore('photos');
+    
+    const request = store.put({ type: type, data: data });
+    
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
 
 // ============================================
 // CONVERSION FICHIER → DONNÉES

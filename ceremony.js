@@ -9,31 +9,79 @@ const CONFIG = {
   confettiCount: 250
 };
 
-// Chargement des données depuis localStorage
+// Chargement des données depuis IndexedDB
 let filleuls = [];
 let parrains = [];
+let db;
 
-try {
-  const filleulsData = localStorage.getItem('filleulsData');
-  const parrainsData = localStorage.getItem('parrainsData');
-  
-  if (filleulsData) filleuls = JSON.parse(filleulsData);
-  if (parrainsData) parrains = JSON.parse(parrainsData);
-  
-  // Vérifier que les données sont présentes
-  if (filleuls.length === 0 || parrains.length === 0) {
-    alert('⚠️ Aucune donnée trouvée. Redirection vers la page de configuration...');
+// Initialiser et charger les données
+async function initCeremony() {
+  try {
+    // Ouvrir la base de données
+    db = await openDB();
+    
+    // Charger les données
+    const filleulsData = await loadFromIndexedDB('filleuls');
+    const parrainsData = await loadFromIndexedDB('parrains');
+    
+    if (!filleulsData || !parrainsData || filleulsData.length === 0 || parrainsData.length === 0) {
+      alert('⚠️ Aucune donnée trouvée. Redirection vers la page de configuration...');
+      window.location.href = 'index.html';
+      return;
+    }
+    
+    filleuls = filleulsData;
+    parrains = parrainsData;
+    
+    console.log(`✅ Chargement réussi: ${filleuls.length} filleuls, ${parrains.length} parrains`);
+    
+    // Initialiser les copies de travail
+    availableFilleuls = [...filleuls];
+    availableParrains = [...parrains];
+    
+    // Mettre à jour le texte du bouton
+    updateButtonText();
+    
+  } catch (error) {
+    console.error('Erreur de chargement des données:', error);
+    alert('⚠️ Erreur de chargement. Veuillez recharger les photos.');
     window.location.href = 'index.html';
   }
-} catch (error) {
-  console.error('Erreur de chargement des données:', error);
-  alert('⚠️ Erreur de chargement. Veuillez recharger les photos.');
-  window.location.href = 'index.html';
 }
 
-// Copie de travail des listes
-let availableFilleuls = [...filleuls];
-let availableParrains = [...parrains];
+// Ouvrir la base de données
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('CeremonyDB', 1);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+  });
+}
+
+// Charger depuis IndexedDB
+function loadFromIndexedDB(type) {
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['photos'], 'readonly');
+    const store = transaction.objectStore('photos');
+    const request = store.get(type);
+    
+    request.onsuccess = () => {
+      if (request.result) {
+        resolve(request.result.data);
+      } else {
+        resolve(null);
+      }
+    };
+    request.onerror = () => reject(request.error);
+  });
+}
+
+// Lancer l'initialisation au chargement
+initCeremony();
+
+// Copie de travail des listes (initialisées dans initCeremony)
+let availableFilleuls = [];
+let availableParrains = [];
 
 // ============================================
 // ÉLÉMENTS DOM
@@ -448,6 +496,3 @@ console.log(
   '%c✨ Interface développée pour l\'Association des Élèves Ingénieurs en Informatique',
   'font-size: 14px; color: #0F5CA8;'
 );
-
-// Initialiser le texte du bouton
-updateButtonText();
